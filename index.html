@@ -36,6 +36,8 @@
                 }
             }
         }
+		
+		
     </script>
     <style>
         .glass-panel {
@@ -62,6 +64,17 @@
             .hero-photo { opacity: .3 !important; }
         }
         .section-kicker { letter-spacing: .16em; }
+		
+				
+		/* Ocultar visualmente a barra de rolagem do seletor de horários */
+		#formVisitTime {
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+		}
+
+		#formVisitTime::-webkit-scrollbar {
+			display: none;
+		}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-agro-500 selection:text-white">
@@ -255,10 +268,15 @@
                 </a>
             </div>
 
-            <div class="mt-8 inline-block bg-agro-900/90 border border-agro-gold/40 px-6 py-2.5 rounded-2xl text-center">
-                <span class="text-xs text-slate-300 uppercase font-semibold tracking-wider block">Valor do Investimento</span>
-                <span id="heroPriceDisplay" class="text-2xl font-black text-agro-gold">R$ 4.500.000,00</span>
-            </div>
+            <div class="mt-8 inline-block bg-agro-900/90 border border-agro-gold/40 px-6 py-3 rounded-2xl text-center">
+				<span class="text-xs text-slate-300 uppercase font-semibold tracking-wider block">Valor do Investimento</span>
+				<span id="heroPriceDisplay" class="text-2xl font-black text-agro-gold">R$ 4.500.000,00</span>
+				<span class="block mt-1 text-sm font-bold text-agro-100">Aberto a propostas • Negociação direta</span>
+				<a href="#contato" class="inline-block mt-2 text-sm font-bold text-agro-gold underline">
+					Envie sua proposta
+				</a>
+			</div>
+
 
         </div>
     </section>
@@ -897,6 +915,69 @@
                         <label class="block text-xs font-semibold text-slate-300 mb-1">Sua Mensagem ou Proposta</label>
                         <textarea id="formMessage" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-agro-gold outline-none" placeholder="Tenho interesse na fazenda e gostaria de agendar uma visita..."></textarea>
                     </div>
+					
+					<div>
+						<label class="block text-xs font-semibold text-slate-300 mb-1">
+							Data e horário preferidos para a visita
+						</label>
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div>
+								<label class="block text-xs font-semibold text-slate-300 mb-1">
+									Data preferida para a visita
+								</label>
+								<input
+									type="date"
+									id="formVisitDate"
+									class="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-agro-gold outline-none"
+								>
+							</div>
+
+							<div>
+								<label class="block text-xs font-semibold text-slate-300 mb-1">
+									Horário preferido
+								</label>
+								<select
+									id="formVisitTime"
+									class="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-agro-gold outline-none"
+								>
+									<option value="">Selecione um horário</option>
+								</select>
+							</div>
+						</div>
+
+
+					</div>
+
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						<div>
+							<label class="block text-xs font-semibold text-slate-300 mb-1">
+								Quem indicou você?
+							</label>
+							<input
+								type="text"
+								id="formReferrer"
+								class="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-agro-gold outline-none"
+								placeholder="Nome da pessoa que indicou"
+							>
+						</div>
+
+						<div>
+							<label class="block text-xs font-semibold text-slate-300 mb-1">
+								WhatsApp de quem indicou
+							</label>
+							<input
+								type="tel"
+								id="formReferrerPhone"
+								class="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-agro-gold outline-none"
+								placeholder="(00) 00000-0000"
+							>
+						</div>
+					</div>
+
+					<p class="text-xs text-slate-300">
+						Indicações: consulte previamente as condições e os critérios para eventual comissão.
+					</p>
+
 
                     <button type="submit" class="w-full py-4 bg-agro-gold hover:bg-agro-goldhover text-agro-900 font-extrabold rounded-xl transition flex items-center justify-center gap-2 text-base shadow-xl gold-glow">
                         <i class="fa-brands fa-whatsapp text-2xl"></i>
@@ -1171,34 +1252,73 @@
 
         // Form Submit Handler
         function handleFormSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('formName').value;
-            const phone = document.getElementById('formPhone').value;
-            const interest = document.getElementById('formInterest').value;
-            const msg = document.getElementById('formMessage').value;
+			e.preventDefault();
 
-            const cleanPhone = appData.phone.replace(/\D/g, '');
-            const text = encodeURIComponent(
-                `*NOVA PROPOSTA / INTERESSE DA FAZENDA*
+			const name = document.getElementById('formName').value;
+			const phone = document.getElementById('formPhone').value;
+			const interest = document.getElementById('formInterest').value;
+			const msg = document.getElementById('formMessage').value;
 
-` +
-                `*Nome:* ${name}
-` +
-                `*Telefone:* ${phone}
-` +
-                `*Interesse:* ${interest}
-` +
-                `*Mensagem:* ${msg}`
-            );
+			const visitDate = document.getElementById('formVisitDate').value;
+			const visitTime = document.getElementById('formVisitTime').value;
 
-            window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
-        }
+			if (visitDate && !visitTime) {
+				alert('Selecione também o horário preferido para a visita.');
+				document.getElementById('formVisitTime').focus();
+				return;
+			}
+
+						
+			const referrer = document.getElementById('formReferrer').value;
+			const referrerPhone = document.getElementById('formReferrerPhone').value;
+
+			const formattedVisitDate = visitDate
+				? new Date(visitDate).toLocaleString('pt-BR')
+				: 'Não informado';
+
+			const cleanPhone = appData.phone.replace(/\D/g, '');
+			const text = encodeURIComponent(
+				`*NOVO CONTATO — FAZENDA ESTRELA*
+
+		` +
+				`*Nome:* ${name}
+		` +
+				`*Telefone:* ${phone}
+		` +
+				`*Interesse:* ${interest}
+		` +
+				`*Data/horário preferidos para visita:* ${formattedVisitDate}
+		` +
+				`*Indicado por:* ${referrer || 'Não informado'}
+		` +
+				`*WhatsApp de quem indicou:* ${referrerPhone || 'Não informado'}
+		` +
+				`*Mensagem/proposta:* ${msg || 'Não informada'}`
+			);
+
+			window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank' );
+		}
+
 
         // Initializer
         window.addEventListener('DOMContentLoaded', () => {
-            loadSavedState();
-            updateCalculations();
-        });
+		loadSavedState();
+		updateCalculations();
+
+		const timeSelect = document.getElementById('formVisitTime');
+
+		for (let minutes = 6 * 60; minutes <= 16 * 60 + 30; minutes += 30) {
+			const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+			const mins = String(minutes % 60).padStart(2, '0');
+			const time = `${hours}:${mins}`;
+
+			const option = document.createElement('option');
+			option.value = time;
+			option.textContent = time;
+			timeSelect.appendChild(option);
+		}
+	});
+
     </script>
 </body>
 </html>
